@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UserService } from './user.service';
@@ -26,15 +27,15 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Retrieve all users' })
+  @Get('/login')
+  @ApiOperation({ summary: 'Login a User' })
   @ApiResponse({
     status: 200,
-    description: 'List of users successfully retrieved.',
+    description: 'User Successfully Logged in.',
     type: [GetUserDto],
   })
-  findAll() {
-    return this.userService.findAll();
+  isPasswordMatch(@Query() query: GetUserDto) {
+    return this.userService.isPasswordMatch(query);
   }
 
   @Get(':email')

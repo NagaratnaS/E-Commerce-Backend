@@ -4,6 +4,9 @@ import { UpdateUserDto } from './dto/patch-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repository/user-repository-impl';
+import { createHash } from './utils/utils';
+import { GetUserDto } from './dto/get-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -19,13 +22,21 @@ export class UserService {
     user.phoneNumber = createUserDto.phoneNumber;
     user.email = createUserDto.email;
     user.role = createUserDto.role;
-    user.password = createUserDto.password;
+    const hashedPassword = await createHash(createUserDto.password);
+    user.password = hashedPassword;
     const userCreated = await this.userRepository.createUser(user);
     return 'The User is created';
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async isPasswordMatch(getUserDto: GetUserDto) {
+    const userRetrievedByEmail = await this.findByEmail(getUserDto.email);
+    const passwordInDb = userRetrievedByEmail.password;
+    const isMatch = await bcrypt.compare(getUserDto.password, passwordInDb);
+    if (isMatch) {
+      console.log('******Password Match successfull*******');
+    } else {
+      console.log('******Password Match Unsuccessfull*******');
+    }
   }
 
   async findByEmail(email: string): Promise<User> {
