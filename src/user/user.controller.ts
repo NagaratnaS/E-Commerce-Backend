@@ -37,17 +37,17 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Retrieve a user by ID' })
-  @ApiParam({ name: 'id', description: 'Unique identifier of the user' })
+  @Get(':email')
+  @ApiOperation({ summary: 'Retrieve a user by email' })
+  @ApiParam({ name: 'email', description: 'Unique identifier of the user' })
   @ApiResponse({
     status: 200,
     description: 'User successfully retrieved.',
     type: GetUserDto,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('email') email: string) {
+    return this.userService.findByEmail(email);
   }
 
   @Patch(':id')

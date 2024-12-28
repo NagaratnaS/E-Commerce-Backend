@@ -19,6 +19,7 @@ export class UserService {
     user.phoneNumber = createUserDto.phoneNumber;
     user.email = createUserDto.email;
     user.role = createUserDto.role;
+    user.password = createUserDto.password;
     const userCreated = await this.userRepository.createUser(user);
     return 'The User is created';
   }
@@ -27,8 +28,8 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findByEmail(email: string): Promise<User> {
+    return await this.userRepository.findUserByEmail(email);
   }
 
   async update(id: number, patchUserDto: UpdateUserDto): Promise<string> {
@@ -43,7 +44,7 @@ export class UserService {
     return await this.userRepository.updateUser(id, user);
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<void> {
     await this.userRepository.deleteUser(id);
   }
 }

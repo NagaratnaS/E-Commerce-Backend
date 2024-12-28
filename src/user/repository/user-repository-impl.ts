@@ -44,9 +44,7 @@ export class UserRepository extends Repository<User> {
     await this.userRepository.delete(id);
   }
 
-  // public async findUserById(userEntity: User): Promise<User[]> {
-  //   return this.userRepository.findOneBy(where: {
-  //     ""
-  //   });
-  // }
+  public async findUserByEmail(userEmail: string): Promise<User> {
+    return this.userRepository.findOneBy({ email: userEmail });
+  }
 }
