@@ -7,10 +7,14 @@ import { UserRepository } from './repository/user-repository-impl';
 import { createHash } from './utils/utils';
 import { GetUserDto } from './dto/get-user.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepository: UserRepository) {
+  constructor(
+    private userRepository: UserRepository,
+    private jwtService: JwtService,
+  ) {
     // this.userRepository = this.userRepository;
   }
   async create(createUserDto: CreateUserDto): Promise<string> {
@@ -28,15 +32,11 @@ export class UserService {
     return 'The User is created';
   }
 
-  async isPasswordMatch(getUserDto: GetUserDto) {
+  async isPasswordMatch(getUserDto: GetUserDto): Promise<boolean> {
     const userRetrievedByEmail = await this.findByEmail(getUserDto.email);
     const passwordInDb = userRetrievedByEmail.password;
     const isMatch = await bcrypt.compare(getUserDto.password, passwordInDb);
-    if (isMatch) {
-      console.log('******Password Match successfull*******');
-    } else {
-      console.log('******Password Match Unsuccessfull*******');
-    }
+    return isMatch;
   }
 
   async findByEmail(email: string): Promise<User> {
@@ -57,5 +57,19 @@ export class UserService {
 
   async remove(id: number): Promise<void> {
     await this.userRepository.deleteUser(id);
+  }
+
+  async generateToken(getUserDto: GetUserDto) {
+    const isMatch = await this.isPasswordMatch(getUserDto);
+    if (isMatch) {
+      const userRetrievedByEmail = await this.findByEmail(getUserDto.email);
+      const payload = {
+        username: userRetrievedByEmail.email,
+        sub: userRetrievedByEmail.id,
+      };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    }
   }
 }

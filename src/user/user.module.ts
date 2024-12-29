@@ -4,9 +4,16 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repository/user-repository-impl';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    JwtModule.register({
+      secret: 'secretKey',
+      signOptions: { expiresIn: '60s' },
+    }),
+  ],
   controllers: [UserController],
   providers: [UserService, UserRepository],
   exports: [UserService, TypeOrmModule],

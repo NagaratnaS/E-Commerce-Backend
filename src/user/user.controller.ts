@@ -35,7 +35,7 @@ export class UserController {
     type: [GetUserDto],
   })
   isPasswordMatch(@Query() query: GetUserDto) {
-    return this.userService.isPasswordMatch(query);
+    return this.userService.generateToken(query);
   }
 
   @Get(':email')
