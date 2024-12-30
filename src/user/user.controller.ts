@@ -19,7 +19,7 @@ import { GetUserDto } from './dto/get-user.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('/register')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -34,8 +34,8 @@ export class UserController {
     description: 'User Successfully Logged in.',
     type: [GetUserDto],
   })
-  isPasswordMatch(@Query() query: GetUserDto) {
-    return this.userService.generateToken(query);
+  loginUser(@Query() query: GetUserDto) {
+    return this.userService.loginUser(query);
   }
 
   @Get(':email')

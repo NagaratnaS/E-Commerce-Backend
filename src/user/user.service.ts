@@ -4,7 +4,7 @@ import { UpdateUserDto } from './dto/patch-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repository/user-repository-impl';
-import { createHash } from './utils/utils';
+import { createHash, isPasswordMatch } from './utils/utils';
 import { GetUserDto } from './dto/get-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -32,13 +32,6 @@ export class UserService {
     return 'The User is created';
   }
 
-  async isPasswordMatch(getUserDto: GetUserDto): Promise<boolean> {
-    const userRetrievedByEmail = await this.findByEmail(getUserDto.email);
-    const passwordInDb = userRetrievedByEmail.password;
-    const isMatch = await bcrypt.compare(getUserDto.password, passwordInDb);
-    return isMatch;
-  }
-
   async findByEmail(email: string): Promise<User> {
     return await this.userRepository.findUserByEmail(email);
   }
@@ -59,13 +52,18 @@ export class UserService {
     await this.userRepository.deleteUser(id);
   }
 
-  async generateToken(getUserDto: GetUserDto) {
-    const isMatch = await this.isPasswordMatch(getUserDto);
+  async loginUser(getUserDto: GetUserDto) {
+    const userRetrievedByEmail = await this.findByEmail(getUserDto.email);
+    const isMatch = await isPasswordMatch(
+      getUserDto.password,
+      userRetrievedByEmail.password,
+    );
     if (isMatch) {
-      const userRetrievedByEmail = await this.findByEmail(getUserDto.email);
       const payload = {
-        username: userRetrievedByEmail.email,
-        sub: userRetrievedByEmail.id,
+        email: userRetrievedByEmail.email,
+        sub: userRetrievedByEmail.role,
+        firstName: userRetrievedByEmail.firstName,
+        lastName: userRetrievedByEmail.lastName,
       };
       return {
         access_token: this.jwtService.sign(payload),
