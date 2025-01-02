@@ -31,8 +31,7 @@ export class AddressRepository extends Repository<Address> {
     );
   }
   public async createAddress(addressEntity: Address): Promise<Address> {
-    const newAddress = this.addressRepository.create(addressEntity);
-    return this.addressRepository.save(newAddress);
+    return this.addressRepository.save(addressEntity);
   }
 
   public async updateAddress(
@@ -47,7 +46,7 @@ export class AddressRepository extends Repository<Address> {
     await this.addressRepository.delete(id);
   }
 
-  public async findAddressByUserId(userId: number): Promise<Address[]> {
+  public async findAddressesByUserId(userId: number): Promise<Address[]> {
     return this.addressRepository.findBy({ userId: userId });
   }
 }

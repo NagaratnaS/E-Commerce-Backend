@@ -23,7 +23,7 @@ export class AddressService {
   }
 
   async findByUserId(userId: number): Promise<Address[]> {
-    return await this.addressRepository.findAddressByUserId(userId);
+    return await this.addressRepository.findAddressesByUserId(userId);
   }
 
   async findByPublicId(publicId: string): Promise<Address> {

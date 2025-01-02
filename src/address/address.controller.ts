@@ -15,7 +15,7 @@ import { UpdateAddressDto } from './dto/patch-address.dto';
 import { GetAddressDto } from './dto/get-address.dto';
 
 @ApiTags('Address')
-@Controller('Address')
+@Controller('address')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
@@ -39,7 +39,7 @@ export class AddressController {
     type: GetAddressDto,
   })
   @ApiResponse({ status: 404, description: 'Address not found.' })
-  findOneByUserId(@Param('userId') userId: number) {
+  findByUserId(@Param('userId') userId: number) {
     return this.addressService.findByUserId(userId);
   }
 
