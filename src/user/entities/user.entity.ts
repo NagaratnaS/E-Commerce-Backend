@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Address } from 'src/address/entity/address.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 export enum UserRole {
   CUSTOMER = 'CUSTOMER',
@@ -41,4 +42,10 @@ export class User {
     default: UserRole.CUSTOMER,
   })
   role: UserRole;
+
+  @Column({ default: false })
+  isVerified: boolean;
+
+  @OneToMany(() => Address, (address) => address.user)
+  addresses: Address[];
 }

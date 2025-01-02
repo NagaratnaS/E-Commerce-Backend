@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/patch-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repository/user-repository-impl';
 import { createHash, isPasswordMatch } from './utils/utils';
 import { GetUserDto } from './dto/get-user.dto';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -14,9 +12,7 @@ export class UserService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JwtService,
-  ) {
-    // this.userRepository = this.userRepository;
-  }
+  ) {}
   async create(createUserDto: CreateUserDto): Promise<string> {
     const user: User = this.userRepository.create();
     user.firstName = createUserDto.firstName;
