@@ -9,10 +9,6 @@ import {
 } from 'class-validator';
 
 export class CreateAddressDto {
-  @ApiProperty({ description: 'ID of the user owning the address', example: 1 })
-  @IsInt()
-  userId: number;
-
   @ApiProperty({
     description: 'First line of the address',
     example: '123 Main St',

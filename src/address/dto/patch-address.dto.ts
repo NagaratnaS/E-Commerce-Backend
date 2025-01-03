@@ -3,14 +3,6 @@ import { IsString, IsOptional, IsEnum, IsInt, Length } from 'class-validator';
 
 export class UpdateAddressDto {
   @ApiPropertyOptional({
-    description: 'ID of the user owning the address',
-    example: 1,
-  })
-  @IsInt()
-  @IsOptional()
-  userId?: number;
-
-  @ApiPropertyOptional({
     description: 'First line of the address',
     example: '456 Park Ave',
   })

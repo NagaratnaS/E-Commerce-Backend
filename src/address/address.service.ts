@@ -3,14 +3,24 @@ import { AddressRepository } from './repository/address-repository';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { Address } from './entity/address.entity';
 import { UpdateAddressDto } from './dto/patch-address.dto';
+import { UserService } from 'src/user/user.service';
+import { UserRepository } from 'src/user/repository/user-repository-impl';
 
 @Injectable()
 export class AddressService {
-  constructor(private addressRepository: AddressRepository) {}
+  constructor(
+    private addressRepository: AddressRepository,
+    private userRepository: UserRepository,
+    private userService: UserService,
+  ) {}
 
-  async create(createAddressDto: CreateAddressDto): Promise<string> {
+  async create(
+    createAddressDto: CreateAddressDto,
+    email: string,
+  ): Promise<string> {
+    const user = await this.userService.findByEmail(email);
     const userAddress: Address = this.addressRepository.create();
-    userAddress.userId = createAddressDto.userId;
+    userAddress.userId = user.id;
     userAddress.addressLine1 = createAddressDto.addressLine1;
     userAddress.addressLine2 = createAddressDto.addressLine2;
     userAddress.city = createAddressDto.city;
@@ -22,8 +32,9 @@ export class AddressService {
     return 'The User Address is created';
   }
 
-  async findByUserId(userId: number): Promise<Address[]> {
-    return await this.addressRepository.findAddressesByUserId(userId);
+  async findByUserId(email: string): Promise<Address[]> {
+    const user = await this.userService.findByEmail(email);
+    return await this.addressRepository.findAddressesByUserId(user.id);
   }
 
   async findByPublicId(publicId: string): Promise<Address> {
@@ -36,7 +47,6 @@ export class AddressService {
   ): Promise<string> {
     const userByPublicId = await this.findByPublicId(publicId);
     const userAddress: Address = this.addressRepository.create();
-    userAddress.userId = patchAddressDto.userId;
     userAddress.addressLine1 = patchAddressDto.addressLine1;
     userAddress.addressLine2 = patchAddressDto.addressLine2;
     userAddress.city = patchAddressDto.city;

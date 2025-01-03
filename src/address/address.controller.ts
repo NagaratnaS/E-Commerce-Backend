@@ -7,15 +7,26 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/patch-address.dto';
 import { GetAddressDto } from './dto/get-address.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
+@UseGuards(JwtAuthGuard)
 @ApiTags('Address')
 @Controller('address')
+@ApiBearerAuth('JWT-auth')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
@@ -23,24 +34,25 @@ export class AddressController {
   @ApiOperation({ summary: 'Create a new Address' })
   @ApiResponse({ status: 201, description: 'Address successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createAddressDto: CreateAddressDto): Promise<string> {
-    return this.addressService.create(createAddressDto);
+  create(
+    @Body() createAddressDto: CreateAddressDto,
+    @Req() req,
+  ): Promise<string> {
+    const email = req.user.email;
+    return this.addressService.create(createAddressDto, email);
   }
 
-  @Get(':userId')
+  @Get()
   @ApiOperation({ summary: 'Retrieve an Address by user Id' })
-  @ApiParam({
-    name: 'userId',
-    description: 'identifier of the address by user',
-  })
   @ApiResponse({
     status: 200,
     description: 'Address successfully retrieved.',
     type: GetAddressDto,
   })
   @ApiResponse({ status: 404, description: 'Address not found.' })
-  findByUserId(@Param('userId') userId: number) {
-    return this.addressService.findByUserId(userId);
+  findByUserId(@Req() req) {
+    const email = req.user.email;
+    return this.addressService.findByUserId(email);
   }
 
   @Patch(':publicId')
